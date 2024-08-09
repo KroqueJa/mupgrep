@@ -19,7 +19,10 @@ static void process(const char* file_path, Input* in) {
 
 void process_files(FileList* list, Input* in)
 {
-    for (int i = 0; i < list->count; ++i) {
-        process(list->files[i], in);
+    char* next_file = get_next_file(list);
+
+    while (next_file) {
+        process(next_file, in);
+        next_file = get_next_file(list);
     }
 }

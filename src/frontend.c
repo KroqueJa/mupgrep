@@ -86,9 +86,20 @@ static int is_bin_file(const char* file_path) {
 void init_file_list(FileList* list, int capacity) {
     list->count = 0;
     list->capacity = capacity;
+    list->next_idx = 0;
     list->files = malloc(list->capacity * sizeof(char*));
     if (list->files == NULL) {
         perror("Failed to allocate memory for file list");
+        exit(EXIT_FAILURE);
+    } 
+
+    if (pthread_mutex_init(&list->mtx, NULL) != 0) {
+        perror("Failed to initialize mutex");
+        exit(EXIT_FAILURE);
+    }
+
+    if (pthread_cond_init(&list->cv, NULL) != 0) {
+        perror("Failed to initialize condition variable");
         exit(EXIT_FAILURE);
     }
 }
@@ -112,6 +123,10 @@ void free_file_list(FileList* list) {
         free(list->files[i]);
     }
     free(list->files);
+
+    // Destroy the mutex and condition variable
+    pthread_mutex_destroy(&list->mtx);
+    pthread_cond_destroy(&list->cv);
 }
 
 // Callback function for nftw
@@ -140,4 +155,13 @@ void list_files_recursively(FileList* file_list, const char* base_path) {
         perror("nftw");
         exit(EXIT_FAILURE);
     }
+}
+
+char* get_next_file(FileList* list)
+{
+    if (list->next_idx >= list->count) {
+        return NULL;
+    }
+
+    return list->files[list->next_idx++];
 }

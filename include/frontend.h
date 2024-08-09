@@ -10,6 +10,7 @@
 #include <sys/stat.h>
 #include <sys/types.h>
 #include <unistd.h>
+#include <pthread.h>
 
 /* ======== OPTIONS ======== */
 // Enum for option flags
@@ -34,6 +35,9 @@ typedef struct FileList {
     char** files;
     int count;
     int capacity;
+    int next_idx;
+    pthread_mutex_t mtx;
+    pthread_cond_t cv;
 } FileList;
 
 /* ======== LIST FILES ======== */
@@ -46,5 +50,8 @@ void init_file_list(FileList* list, int capacity);
 
 // Free a file list
 void free_file_list(FileList* list);
+
+// Get the next file to process
+char* get_next_file(FileList* list);
 
 #endif // FRONTEND_H
