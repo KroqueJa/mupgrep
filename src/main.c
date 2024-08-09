@@ -30,10 +30,13 @@ int main(int argc, char** argv) {
     // Add the files to the file list
     list_files_recursively(&file_list, cwd);
 
-    // Pass the file list to the backend for processing
-    process_files(&file_list, &in);
+    // Initialize the backend
+    init(&in, &file_list);
+    start_threads();
+    print_output();
 
     free_file_list(&file_list);
+    cleanup();
 
     return 0;
 }

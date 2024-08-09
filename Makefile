@@ -1,5 +1,5 @@
 CC=clang
-CFLAGS=-Wall -Wextra -std=c99 -I$(INC_DIR) -fsanitize=address
+CFLAGS=-Wall -Wextra -std=c99 -I$(INC_DIR) -fsanitize=address -O3
 
 BUILD_DIR=build
 BIN_DIR=bin

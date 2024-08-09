@@ -53,7 +53,6 @@ Input parse_opts(int argc, char** argv) {
         input.options = -1;
         return input;
     }
-
 }
 
 /* ======== LIST FILES ======== */
@@ -91,15 +90,10 @@ void init_file_list(FileList* list, int capacity) {
     if (list->files == NULL) {
         perror("Failed to allocate memory for file list");
         exit(EXIT_FAILURE);
-    } 
+    }
 
     if (pthread_mutex_init(&list->mtx, NULL) != 0) {
         perror("Failed to initialize mutex");
-        exit(EXIT_FAILURE);
-    }
-
-    if (pthread_cond_init(&list->cv, NULL) != 0) {
-        perror("Failed to initialize condition variable");
         exit(EXIT_FAILURE);
     }
 }
@@ -126,12 +120,11 @@ void free_file_list(FileList* list) {
 
     // Destroy the mutex and condition variable
     pthread_mutex_destroy(&list->mtx);
-    pthread_cond_destroy(&list->cv);
 }
 
 // Callback function for nftw
-static int callback(const char* file_path, const struct stat* sb,
-                        int type_flag, struct FTW* ftwbuf) {
+static int callback(const char* file_path, const struct stat* sb, int type_flag,
+                    struct FTW* ftwbuf) {
     (void)sb;     // Suppress unused parameter warning
     (void)ftwbuf; // Suppress unused parameter warning
 
@@ -157,11 +150,14 @@ void list_files_recursively(FileList* file_list, const char* base_path) {
     }
 }
 
-char* get_next_file(FileList* list)
-{
-    if (list->next_idx >= list->count) {
-        return NULL;
+char* get_next_file(FileList* list) {
+    char* out = NULL;
+    pthread_mutex_lock(&list->mtx);
+
+    if (list->next_idx < list->count) {
+        out = list->files[list->next_idx++];
     }
 
-    return list->files[list->next_idx++];
+    pthread_mutex_unlock(&list->mtx);
+    return out;
 }

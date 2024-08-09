@@ -37,7 +37,6 @@ typedef struct FileList {
     int capacity;
     int next_idx;
     pthread_mutex_t mtx;
-    pthread_cond_t cv;
 } FileList;
 
 /* ======== LIST FILES ======== */
