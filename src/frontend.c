@@ -57,10 +57,10 @@ int parse_opts(int argc, char **argv) {
 
 /* ======== LIST FILES ======== */
 // Global variable to hold the list of file paths
-FileList file_list;
-#define CHUNK_SIZE 512 // Number of bytes to read for binary check
+static FileList* current_file_list = NULL;
 
 // Function to determine if a file is likely binary
+#define CHUNK_SIZE 512 // Number of bytes to read for binary check
 static int is_bin_file(const char* file_path) {
     FILE *file = fopen(file_path, "rb");
     if (file == NULL) {
@@ -82,10 +82,10 @@ static int is_bin_file(const char* file_path) {
 }
 
 // Initialize a FileList
-static void init_file_list(FileList *list) {
+void init_file_list(FileList* list) {
     list->count = 0;
     list->capacity = 10;
-    list->files = malloc(list->capacity * sizeof(char *));
+    list->files = malloc(list->capacity * sizeof(char*));
     if (list->files == NULL) {
         perror("Failed to allocate memory for file list");
         exit(EXIT_FAILURE);
@@ -106,7 +106,7 @@ static void add_file(FileList *list, const char *file_path) {
 }
 
 // Free the memory used by the FileList
-static void free_file_list(FileList* list) {
+void free_file_list(FileList* list) {
     for (int i = 0; i < list->count; i++) {
         free(list->files[i]);
     }
@@ -120,14 +120,16 @@ static int process_file(const char* file_path, const struct stat* sb, int type_f
 
     // TODO: add a flag to not ignore the .git dir
     if (type_flag == FTW_F && !is_bin_file(file_path) && !(strstr(file_path, "/.git/") || strstr(file_path, "/.git"))) {
-      add_file(&file_list, file_path); // Add the file path to the list
+      add_file(&current_file_list, file_path); // Add the file path to the list
     }
     return 0;
 }
 
 // Function to recursively list files in the current directory and subdirectories
-void list_files_recursively(const char *base_path) {
-    init_file_list(&file_list); // Initialize the file list
+void list_files_recursively(FileList* file_list, const char* base_path) {
+
+    // Copy the provided pointer into the local file list
+    current_file_list = file_list;
 
     // Use nftw to traverse the directory tree
     if (nftw(base_path, process_file, 20, FTW_PHYS) == -1) {
@@ -136,11 +138,8 @@ void list_files_recursively(const char *base_path) {
     }
 
     // For now, output the list of files
-    for (int i = 0; i < file_list.count; i++) {
-        printf("%s\n", file_list.files[i]);
+    for (int i = 0; i < file_list->count; i++) {
+        printf("%s\n", file_list->files[i]);
     }
-
-    // Free the file list
-    free_file_list(&file_list);
 
 }

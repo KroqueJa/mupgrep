@@ -15,6 +15,13 @@ int main(int argc, char **argv) {
     if (options & INVERT_MATCH) {
         printf("Invert match option is set.\n");
     }
+
+    // Initialize a file list
+    FileList file_list;
+    file_list.capacity = 10;
+
+    init_file_list(&file_list);
+
     char cwd[PATH_MAX]; // Buffer to hold the current working directory
 
     // Get the current working directory
@@ -24,7 +31,9 @@ int main(int argc, char **argv) {
     }
 
     // List files recursively starting from the current working directory
-    list_files_recursively(cwd);
+    list_files_recursively(&file_list, cwd);
+
+    free_file_list(&file_list);
 
     return 0;
 }

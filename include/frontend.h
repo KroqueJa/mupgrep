@@ -26,16 +26,19 @@ int parse_opts(int argc, char **argv);
 
 // Structure to hold file paths
 typedef struct FileList {
-    char **files;
+    char** files;
     int count;
     int capacity;
 } FileList;
 
 /* ======== LIST FILES ======== */
-// Global variable to hold the list of file paths
-extern FileList file_list;
-
 // Function to recursively list files in the current directory and subdirectories
-void list_files_recursively(const char *base_path);
+void list_files_recursively(FileList* file_list, const char* base_path);
+
+// Initialize a file list
+void init_file_list(FileList* list);
+
+// Free a file list
+void free_file_list(FileList* list);
 
 #endif // FRONTEND_H
