@@ -113,7 +113,7 @@ void free_file_list(FileList* list) {
 }
 
 // Callback function for nftw
-static int process_file(const char* file_path, const struct stat* sb,
+static int callback(const char* file_path, const struct stat* sb,
                         int type_flag, struct FTW* ftwbuf) {
     (void)sb;     // Suppress unused parameter warning
     (void)ftwbuf; // Suppress unused parameter warning
@@ -134,7 +134,7 @@ void list_files_recursively(FileList* file_list, const char* base_path) {
     current_file_list = file_list;
 
     // Use nftw to traverse the directory tree
-    if (nftw(base_path, process_file, 20, FTW_PHYS) == -1) {
+    if (nftw(base_path, callback, 20, FTW_PHYS) == -1) {
         perror("nftw");
         exit(EXIT_FAILURE);
     }
