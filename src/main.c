@@ -26,11 +26,6 @@ int main(int argc, char **argv) {
     // List files recursively starting from the current working directory
     list_files_recursively(cwd);
 
-    // Output the list of files
-    for (int i = 0; i < file_list.count; i++) {
-        printf("%s\n", file_list.files[i]);
-    }
-
     return 0;
 }
 

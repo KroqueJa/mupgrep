@@ -1,8 +1,6 @@
 #include "frontend.h"
 
-// Global variable to hold the list of file paths
-FileList file_list;
-
+/* ======== OPTIONS ======== */
 // Function to print help message
 void print_help() {
     printf("Usage: mupgrep [options] pattern [file...]\n");
@@ -57,8 +55,34 @@ int parse_opts(int argc, char **argv) {
     return option_flags;
 }
 
+/* ======== LIST FILES ======== */
+// Global variable to hold the list of file paths
+FileList file_list;
+#define CHUNK_SIZE 512 // Number of bytes to read for binary check
+
+// Function to determine if a file is likely binary
+static int is_bin_file(const char* file_path) {
+    FILE *file = fopen(file_path, "rb");
+    if (file == NULL) {
+        perror("fopen");
+        return 1;
+    }
+
+    unsigned char buffer[CHUNK_SIZE];
+    size_t bytes_read = fread(buffer, 1, CHUNK_SIZE, file);
+    fclose(file);
+
+    for (size_t i = 0; i < bytes_read; ++i) {
+        if (!buffer[i]) {
+            return 1; // Found a null byte, treat as binary
+        }
+    }
+
+    return 0; // No null bytes found, treat as text
+}
+
 // Initialize a FileList
-void init_file_list(FileList *list) {
+static void init_file_list(FileList *list) {
     list->count = 0;
     list->capacity = 10;
     list->files = malloc(list->capacity * sizeof(char *));
@@ -69,7 +93,7 @@ void init_file_list(FileList *list) {
 }
 
 // Add a file path to the FileList
-void add_file(FileList *list, const char *file_path) {
+static void add_file(FileList *list, const char *file_path) {
     if (list->count == list->capacity) {
         list->capacity *= 2;
         list->files = realloc(list->files, list->capacity * sizeof(char *));
@@ -82,7 +106,7 @@ void add_file(FileList *list, const char *file_path) {
 }
 
 // Free the memory used by the FileList
-void free_file_list(FileList *list) {
+static void free_file_list(FileList* list) {
     for (int i = 0; i < list->count; i++) {
         free(list->files[i]);
     }
@@ -90,12 +114,15 @@ void free_file_list(FileList *list) {
 }
 
 // Callback function for nftw
-int process_file(const char *file_path, const struct stat *sb, int type_flag, struct FTW *ftwbuf) {
-    // Check if it's a regular file
-    if (type_flag == FTW_F) {
-        add_file(&file_list, file_path); // Add the file path to the list
+static int process_file(const char* file_path, const struct stat* sb, int type_flag, struct FTW* ftwbuf) {
+    (void)sb;      // Suppress unused parameter warning
+    (void)ftwbuf;  // Suppress unused parameter warning 
+
+    // TODO: add a flag to not ignore the .git dir
+    if (type_flag == FTW_F && !is_bin_file(file_path) && !(strstr(file_path, "/.git/") || strstr(file_path, "/.git"))) {
+      add_file(&file_list, file_path); // Add the file path to the list
     }
-    return 0; // Return 0 to continue
+    return 0;
 }
 
 // Function to recursively list files in the current directory and subdirectories
@@ -107,4 +134,13 @@ void list_files_recursively(const char *base_path) {
         perror("nftw");
         exit(EXIT_FAILURE);
     }
+
+    // For now, output the list of files
+    for (int i = 0; i < file_list.count; i++) {
+        printf("%s\n", file_list.files[i]);
+    }
+
+    // Free the file list
+    free_file_list(&file_list);
+
 }
