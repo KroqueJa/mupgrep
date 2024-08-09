@@ -11,7 +11,11 @@ void print_help() {
 }
 
 // Function to parse command line options and return a bitmask of options
-int parse_opts(int argc, char** argv) {
+Input parse_opts(int argc, char** argv) {
+    Input input;
+    input.options = 0;
+    input.pattern = NULL;
+
     int option;
     int option_flags = 0; // Variable to hold the bitmask of options
 
@@ -31,27 +35,25 @@ int parse_opts(int argc, char** argv) {
             option_flags |= INVERT_MATCH; // Set INVERT_MATCH flag
             break;
         case 'h':
-            print_help();
-            return 0; // Return 0 if help is requested
+            input.options = -1;
+            return input; // Return -1 if help is requested
         default:
-            print_help();
-            return -1; // Return -1 on invalid option
+            input.options = -2;
+            return input; // Return -2 on invalid option
         }
     }
 
     // Check for required pattern argument
     if (optind < argc) {
-        char* pattern = argv[optind++];
-        printf("Pattern: %s\n", pattern);
-        for (int i = optind; i < argc; i++) {
-            printf("File: %s\n", argv[i]);
-        }
+        input.pattern = argv[optind++];
+        input.options = option_flags;
+
+        return input;
     } else {
-        fprintf(stderr, "Error: No pattern provided\n");
-        return -1;
+        input.options = -1;
+        return input;
     }
 
-    return option_flags;
 }
 
 /* ======== LIST FILES ======== */

@@ -18,11 +18,16 @@ enum Option {
     INVERT_MATCH = 1 << 1,
 };
 
+typedef struct Input {
+    char* pattern;
+    int options;
+} Input;
+
 // Function to print help message
 void print_help();
 
 // Function to parse command line options and return a bitmask of options
-int parse_opts(int argc, char** argv);
+Input parse_opts(int argc, char** argv);
 
 // Structure to hold file paths
 typedef struct FileList {

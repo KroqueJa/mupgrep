@@ -2,19 +2,16 @@
 #include "frontend.h"
 
 int main(int argc, char** argv) {
-    int options = parse_opts(argc, argv);
-
-    if (options < 0) {
-        // Error handling
-        return 1;
-    }
+    Input in = parse_opts(argc, argv);
 
     // Check options using bitmask
-    if (options & IGNORE_CASE) {
-        printf("Ignore case option is set.\n");
-    }
-    if (options & INVERT_MATCH) {
-        printf("Invert match option is set.\n");
+    if (in.options == -1) {
+        print_help();
+        return 0;
+    } else if (in.options == -2) {
+        printf("ERROR - could not parse command, exiting\n");
+        print_help();
+        return 1;
     }
 
     // Initialize a file list
@@ -34,7 +31,7 @@ int main(int argc, char** argv) {
     list_files_recursively(&file_list, cwd);
 
     // Pass the file list to the backend for processing
-    process_files(&file_list);
+    process_files(&file_list, &in);
 
     free_file_list(&file_list);
 
