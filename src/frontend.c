@@ -84,7 +84,7 @@ static int is_bin_file(const char* file_path) {
 // Initialize a FileList
 void init_file_list(FileList* list) {
     list->count = 0;
-    list->capacity = 10;
+    list->capacity = 3;
     list->files = malloc(list->capacity * sizeof(char*));
     if (list->files == NULL) {
         perror("Failed to allocate memory for file list");
@@ -120,7 +120,7 @@ static int process_file(const char* file_path, const struct stat* sb, int type_f
 
     // TODO: add a flag to not ignore the .git dir
     if (type_flag == FTW_F && !is_bin_file(file_path) && !(strstr(file_path, "/.git/") || strstr(file_path, "/.git"))) {
-      add_file(&current_file_list, file_path); // Add the file path to the list
+      add_file(current_file_list, file_path); // Add the file path to the list
     }
     return 0;
 }
