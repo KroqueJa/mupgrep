@@ -1,0 +1,16 @@
+BasedOnStyle:    LLVM
+
+BreakBeforeBraces: Attach # Keep braces on the same line for most structures
+BraceWrapping:
+  AfterFunction: true     # Place function opening braces on a new line
+  SplitEmptyFunction: true
+
+PointerAlignment: Left    # Align pointer stars with the type
+
+IndentWidth: 4            # Set indentation to 4 spaces
+TabWidth: 4               # Set tab width to 4 spaces
+UseTab: Never             # Always use spaces for indentation
+ColumnLimit: 80           # Set maximum column width to 80 characters
+AllowShortFunctionsOnASingleLine: None # Do not allow short functions on a single line
+AllowShortIfStatementsOnASingleLine: false # Keep if statements on separate lines
+SpaceBeforeParens: ControlStatements # Add space before parentheses for control statements

@@ -1,15 +1,15 @@
 #ifndef FRONTEND_H
 #define FRONTEND_H
 
+#include <ftw.h>
+#include <getopt.h>
+#include <limits.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <ftw.h>
-#include <limits.h>
-#include <unistd.h>
-#include <getopt.h>
-#include <sys/types.h>
 #include <sys/stat.h>
+#include <sys/types.h>
+#include <unistd.h>
 
 /* ======== OPTIONS ======== */
 // Enum for option flags
@@ -22,7 +22,7 @@ enum Option {
 void print_help();
 
 // Function to parse command line options and return a bitmask of options
-int parse_opts(int argc, char **argv);
+int parse_opts(int argc, char** argv);
 
 // Structure to hold file paths
 typedef struct FileList {
@@ -32,7 +32,8 @@ typedef struct FileList {
 } FileList;
 
 /* ======== LIST FILES ======== */
-// Function to recursively list files in the current directory and subdirectories
+// Function to recursively list files in the current directory and
+// subdirectories
 void list_files_recursively(FileList* file_list, const char* base_path);
 
 // Initialize a file list

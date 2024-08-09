@@ -11,38 +11,37 @@ void print_help() {
 }
 
 // Function to parse command line options and return a bitmask of options
-int parse_opts(int argc, char **argv) {
+int parse_opts(int argc, char** argv) {
     int option;
     int option_flags = 0; // Variable to hold the bitmask of options
 
-    struct option long_options[] = {
-        {"ignore-case", no_argument, 0, 'i'},
-        {"invert-match", no_argument, 0, 'v'},
-        {"help", no_argument, 0, 'h'},
-        {0, 0, 0, 0}
-    };
+    struct option long_options[] = {{"ignore-case", no_argument, 0, 'i'},
+                                    {"invert-match", no_argument, 0, 'v'},
+                                    {"help", no_argument, 0, 'h'},
+                                    {0, 0, 0, 0}};
 
     // Parse command line options
-    while ((option = getopt_long(argc, argv, "ivh", long_options, NULL)) != -1) {
+    while ((option = getopt_long(argc, argv, "ivh", long_options, NULL)) !=
+           -1) {
         switch (option) {
-            case 'i':
-                option_flags |= IGNORE_CASE; // Set IGNORE_CASE flag
-                break;
-            case 'v':
-                option_flags |= INVERT_MATCH; // Set INVERT_MATCH flag
-                break;
-            case 'h':
-                print_help();
-                return 0; // Return 0 if help is requested
-            default:
-                print_help();
-                return -1; // Return -1 on invalid option
+        case 'i':
+            option_flags |= IGNORE_CASE; // Set IGNORE_CASE flag
+            break;
+        case 'v':
+            option_flags |= INVERT_MATCH; // Set INVERT_MATCH flag
+            break;
+        case 'h':
+            print_help();
+            return 0; // Return 0 if help is requested
+        default:
+            print_help();
+            return -1; // Return -1 on invalid option
         }
     }
 
     // Check for required pattern argument
     if (optind < argc) {
-        char *pattern = argv[optind++];
+        char* pattern = argv[optind++];
         printf("Pattern: %s\n", pattern);
         for (int i = optind; i < argc; i++) {
             printf("File: %s\n", argv[i]);
@@ -62,7 +61,7 @@ static FileList* current_file_list = NULL;
 // Function to determine if a file is likely binary
 #define CHUNK_SIZE 512 // Number of bytes to read for binary check
 static int is_bin_file(const char* file_path) {
-    FILE *file = fopen(file_path, "rb");
+    FILE* file = fopen(file_path, "rb");
     if (file == NULL) {
         perror("fopen");
         return 1;
@@ -93,10 +92,10 @@ void init_file_list(FileList* list) {
 }
 
 // Add a file path to the FileList
-static void add_file(FileList *list, const char *file_path) {
+static void add_file(FileList* list, const char* file_path) {
     if (list->count == list->capacity) {
         list->capacity *= 2;
-        list->files = realloc(list->files, list->capacity * sizeof(char *));
+        list->files = realloc(list->files, list->capacity * sizeof(char*));
         if (list->files == NULL) {
             perror("Failed to reallocate memory for file list");
             exit(EXIT_FAILURE);
@@ -114,18 +113,21 @@ void free_file_list(FileList* list) {
 }
 
 // Callback function for nftw
-static int process_file(const char* file_path, const struct stat* sb, int type_flag, struct FTW* ftwbuf) {
-    (void)sb;      // Suppress unused parameter warning
-    (void)ftwbuf;  // Suppress unused parameter warning 
+static int process_file(const char* file_path, const struct stat* sb,
+                        int type_flag, struct FTW* ftwbuf) {
+    (void)sb;     // Suppress unused parameter warning
+    (void)ftwbuf; // Suppress unused parameter warning
 
     // TODO: add a flag to not ignore the .git dir
-    if (type_flag == FTW_F && !is_bin_file(file_path) && !(strstr(file_path, "/.git/") || strstr(file_path, "/.git"))) {
-      add_file(current_file_list, file_path); // Add the file path to the list
+    if (type_flag == FTW_F && !is_bin_file(file_path) &&
+        !(strstr(file_path, "/.git/") || strstr(file_path, "/.git"))) {
+        add_file(current_file_list, file_path); // Add the file path to the list
     }
     return 0;
 }
 
-// Function to recursively list files in the current directory and subdirectories
+// Function to recursively list files in the current directory and
+// subdirectories
 void list_files_recursively(FileList* file_list, const char* base_path) {
 
     // Copy the provided pointer into the local file list
@@ -136,5 +138,4 @@ void list_files_recursively(FileList* file_list, const char* base_path) {
         perror("nftw");
         exit(EXIT_FAILURE);
     }
-
 }

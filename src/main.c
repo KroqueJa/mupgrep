@@ -1,6 +1,7 @@
+#include "backend.h"
 #include "frontend.h"
 
-int main(int argc, char **argv) {
+int main(int argc, char** argv) {
     int options = parse_opts(argc, argv);
 
     if (options < 0) {
@@ -34,13 +35,10 @@ int main(int argc, char **argv) {
     list_files_recursively(&file_list, cwd);
 
     for (int i = 0; i < file_list.count; i++) {
-        printf("%s\n", file_list.files[i]);
+        process(file_list.files[i]);
     }
 
     free_file_list(&file_list);
 
     return 0;
 }
-
-
-
