@@ -37,7 +37,7 @@ typedef struct FileList {
 void list_files_recursively(FileList* file_list, const char* base_path);
 
 // Initialize a file list
-void init_file_list(FileList* list);
+void init_file_list(FileList* list, int capacity);
 
 // Free a file list
 void free_file_list(FileList* list);

@@ -81,9 +81,9 @@ static int is_bin_file(const char* file_path) {
 }
 
 // Initialize a FileList
-void init_file_list(FileList* list) {
+void init_file_list(FileList* list, int capacity) {
     list->count = 0;
-    list->capacity = 3;
+    list->capacity = capacity;
     list->files = malloc(list->capacity * sizeof(char*));
     if (list->files == NULL) {
         perror("Failed to allocate memory for file list");

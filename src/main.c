@@ -19,9 +19,8 @@ int main(int argc, char** argv) {
 
     // Initialize a file list
     FileList file_list;
-    file_list.capacity = 10;
 
-    init_file_list(&file_list);
+    init_file_list(&file_list, 10);
 
     char cwd[PATH_MAX]; // Buffer to hold the current working directory
 
