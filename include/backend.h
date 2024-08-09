@@ -3,6 +3,6 @@
 
 #include "frontend.h"
 
-void process(const char* file_path);
+void process_files(FileList* list);
 
 #endif

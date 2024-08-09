@@ -31,12 +31,11 @@ int main(int argc, char** argv) {
         return EXIT_FAILURE;
     }
 
-    // List files recursively starting from the current working directory
+    // Add the files to the file list
     list_files_recursively(&file_list, cwd);
 
-    for (int i = 0; i < file_list.count; i++) {
-        process(file_list.files[i]);
-    }
+    // Pass the file list to the backend for processing
+    process_files(&file_list);
 
     free_file_list(&file_list);
 
