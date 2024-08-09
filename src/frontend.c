@@ -137,9 +137,4 @@ void list_files_recursively(FileList* file_list, const char* base_path) {
         exit(EXIT_FAILURE);
     }
 
-    // For now, output the list of files
-    for (int i = 0; i < file_list->count; i++) {
-        printf("%s\n", file_list->files[i]);
-    }
-
 }

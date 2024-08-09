@@ -33,6 +33,10 @@ int main(int argc, char **argv) {
     // List files recursively starting from the current working directory
     list_files_recursively(&file_list, cwd);
 
+    for (int i = 0; i < file_list.count; i++) {
+        printf("%s\n", file_list.files[i]);
+    }
+
     free_file_list(&file_list);
 
     return 0;
